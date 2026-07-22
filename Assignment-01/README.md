@@ -1,4 +1,4 @@
-# Devops-Fundamental
+# Linux fundamental
 
 * `#!/bin/bash` --> this tells operating system to execute this file using the bash shell
 * `echo` --> it prints text to the standard output, we used to create headers and balnk spaces inside the log file
