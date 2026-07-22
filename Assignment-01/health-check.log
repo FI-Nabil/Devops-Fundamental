@@ -1,0 +1,23 @@
+===
+Health check run at: Tue Jul 21 23:25:44 +06 2026
+===
+==Disk Usage==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  1.6G  955G   1% /
+
+==Memory Usage==
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       558Mi        10Gi       3.5Mi       233Mi        10Gi
+Swap:          3.0Gi          0B       3.0Gi
+
+==CPU Load==
+ 23:25:44 up 10:12,  1 user,  load average: 0.00, 0.00, 0.00
+
+==Top 5 memory consumed porcesses==
+    PID USER     %MEM COMMAND
+    242 root      0.2 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+    132 root      0.2 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+     57 root      0.1 /usr/lib/systemd/systemd-journald
+      1 root      0.1 /sbin/init
+     96 systemd+  0.1 /usr/lib/systemd/systemd-resolved
+
