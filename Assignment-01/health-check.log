@@ -21,3 +21,98 @@ Swap:          3.0Gi          0B       3.0Gi
       1 root      0.1 /sbin/init
      96 systemd+  0.1 /usr/lib/systemd/systemd-resolved
 
+===
+Health check run at: Wed Jul 22 17:30:23 +06 2026
+===
+==Disk Usage==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  1.6G  955G   1% /
+
+==Memory Usage==
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       584Mi        10Gi       3.5Mi       297Mi        10Gi
+Swap:          3.0Gi          0B       3.0Gi
+
+==CPU Load==
+ 17:30:23 up  5:18,  1 user,  load average: 0.00, 0.00, 0.00
+
+==Top 5 memory consumed porcesses==
+    PID USER     %MEM COMMAND
+    324 root      0.2 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+    203 root      0.2 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+    139 root      0.1 /usr/lib/systemd/systemd-journald
+      1 root      0.1 /sbin/init
+    171 systemd+  0.1 /usr/lib/systemd/systemd-resolved
+
+===
+Health check run at: Thu Jul 23 11:57:15 +06 2026
+===
+==Disk Usage==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  1.6G  955G   1% /
+
+==Memory Usage==
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       542Mi        10Gi       3.5Mi       203Mi        11Gi
+Swap:          3.0Gi          0B       3.0Gi
+
+==CPU Load==
+ 11:57:16 up 38 min,  1 user,  load average: 0.00, 0.00, 0.00
+
+==Top 5 memory consumed porcesses==
+    PID USER     %MEM COMMAND
+    328 root      0.2 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+    203 root      0.2 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+     79 root      0.1 /usr/lib/systemd/systemd-journald
+      1 root      0.1 /sbin/init
+    111 systemd+  0.1 /usr/lib/systemd/systemd-resolved
+
+===
+Health check run at: Thu Jul 23 11:58:18 +06 2026
+===
+==Disk Usage==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  1.6G  955G   1% /
+WARNING: Disk usage above 0%! Current: 1%
+
+==Memory Usage==
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       541Mi        10Gi       3.5Mi       203Mi        11Gi
+Swap:          3.0Gi          0B       3.0Gi
+
+==CPU Load==
+ 11:58:18 up 39 min,  1 user,  load average: 0.00, 0.00, 0.00
+
+==Top 5 memory consumed porcesses==
+    PID USER     %MEM COMMAND
+    328 root      0.2 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+    203 root      0.2 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+     79 root      0.1 /usr/lib/systemd/systemd-journald
+      1 root      0.1 /sbin/init
+    111 systemd+  0.1 /usr/lib/systemd/systemd-resolved
+
+===
+Health check run at: Thu Jul 23 12:26:53 +06 2026
+===
+==Disk Usage==
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  1.6G  955G   1% /
+WARNING: Disk usage above 0%! Current: 1%
+
+==Memory Usage==
+               total        used        free      shared  buff/cache   available
+Mem:            11Gi       548Mi        10Gi       3.5Mi       297Mi        10Gi
+Swap:          3.0Gi          0B       3.0Gi
+WARNING: Memory usage above 0%! Current: 5%
+
+==CPU Load==
+ 12:26:53 up  1:07,  1 user,  load average: 0.00, 0.00, 0.00
+
+==Top 5 memory consumed porcesses==
+    PID USER     %MEM COMMAND
+    328 root      0.2 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+    203 root      0.2 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+     79 root      0.1 /usr/lib/systemd/systemd-journald
+      1 root      0.1 /sbin/init
+    111 systemd+  0.1 /usr/lib/systemd/systemd-resolved
+
