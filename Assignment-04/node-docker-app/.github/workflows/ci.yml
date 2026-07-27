@@ -1,0 +1,16 @@
+name: Build and Push
+
+on: [push]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t localhost:5000/my-node-app .
+
+      - name: Push to local registry
+        run: docker push localhost:5000/my-node-app
