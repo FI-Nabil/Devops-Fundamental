@@ -15,7 +15,7 @@ services:
     restart: always
 
   db:
-    imagex: postgres:15-alpine
+    image: postgres:15-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=mysecretpassword
