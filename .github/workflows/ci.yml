@@ -9,8 +9,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Build Docker image (local tag)
-        run: docker build -t localhost:5000/my-node-app ./Assignment-04/node-docker-app
+        run: docker build -t localhost:5000/my-node-app:${{ steps.vars.outputs.sha_short }} ./Assignment-04/node-docker-app
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -20,7 +24,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image (GHCR tag)
-        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app ./Assignment-04/node-docker-app
+        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }} ./Assignment-04/node-docker-app
 
       - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app
+        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }}
