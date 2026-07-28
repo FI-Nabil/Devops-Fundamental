@@ -34,7 +34,7 @@ app.get('/', async (req, res) => {
     console.error(err);
     res.status(500).send('Database connection error!');
   }
-};
+});
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
