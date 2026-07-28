@@ -42,6 +42,9 @@ jobs:
       - name: Build Docker image (GHCR tag)
         run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }} ./Assignment-04/node-docker-app
 
+      - name: Push to GitHub Container Registry
+        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }}
+
       - name: Cleanup old images if more than 5 exist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,5 +70,4 @@ jobs:
                 else
                   echo "5 or fewer images exist — no cleanup needed."
                 fi    
-      - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }}
+
