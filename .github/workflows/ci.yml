@@ -2,6 +2,10 @@ name: Build and Push
 
 on: [push]
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   lint:
       runs-on: ubuntu-latest
@@ -38,5 +42,30 @@ jobs:
       - name: Build Docker image (GHCR tag)
         run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }} ./Assignment-04/node-docker-app
 
+      - name: Cleanup old images if more than 5 exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+                PACKAGE=my-node-app
+                VERSIONS=$(gh api \
+                  -H "Accept: application/vnd.github+json" \
+                  "/users/${OWNER}/packages/container/${PACKAGE}/versions" \
+                  --paginate)
+
+                COUNT=$(echo "$VERSIONS" | jq 'length')
+                echo "Current image count in registry: $COUNT"
+
+                if [ "$COUNT" -gt 5 ]; then
+                  OLDEST_ID=$(echo "$VERSIONS" | jq -r 'sort_by(.created_at) | .[0].id')
+                  OLDEST_TAG=$(echo "$VERSIONS" | jq -r 'sort_by(.created_at) | .[0].metadata.container.tags[0]')
+                  echo "More than 5 images found. Deleting oldest: id=$OLDEST_ID tag=$OLDEST_TAG"
+                  gh api \
+                    --method DELETE \
+                    -H "Accept: application/vnd.github+json" \
+                    "/users/${OWNER}/packages/container/${PACKAGE}/versions/${OLDEST_ID}"
+                else
+                  echo "5 or fewer images exist — no cleanup needed."
+                fi    
       - name: Push to GitHub Container Registry
         run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app:${{ steps.vars.outputs.sha_short }}
