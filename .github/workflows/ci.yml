@@ -3,7 +3,16 @@ name: Build and Push
 on: [push]
 
 jobs:
+  lint:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Lint docker-compose.yml (syntax + schema check)
+          run: docker compose -f ./Assignment-04/node-docker-app/docker-compose.yml config
   build-and-push:
+    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
