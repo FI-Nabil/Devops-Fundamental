@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Docker image (GHCR tag)
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/my-node-app ./Assignment-04/node-docker-app
+        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app ./Assignment-04/node-docker-app
 
       - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/${{ github.repository_owner }}/my-node-app
+        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/my-node-app
