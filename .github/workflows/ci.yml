@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t localhost:5000/my-node-app .
+        run: docker build -t localhost:5000/my-node-app ./Assignment-04/node-docker-app
 
       - name: Push to local registry
         run: docker push localhost:5000/my-node-app
