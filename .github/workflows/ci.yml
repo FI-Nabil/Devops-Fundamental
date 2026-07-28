@@ -45,7 +45,7 @@ jobs:
       - name: Cleanup old images if more than 5 exist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          run: |
+        run: |
             OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
                 PACKAGE=my-node-app
                 VERSIONS=$(gh api \
