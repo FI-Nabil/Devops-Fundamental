@@ -11,6 +11,9 @@ jobs:
 
         - name: Lint docker-compose.yml (syntax + schema check)
           run: docker compose -f ./Assignment-04/node-docker-app/docker-compose.yml config
+
+        - name: Lint server.js (syntax check)
+          run: node --check ./Assignment-04/node-docker-app/server.js
   build-and-push:
     needs: lint
     runs-on: ubuntu-latest
