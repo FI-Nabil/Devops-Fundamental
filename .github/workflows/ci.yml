@@ -9,8 +9,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Build Docker image (local tag)
         run: docker build -t localhost:5000/my-node-app ./Assignment-04/node-docker-app
 
-      - name: Push to local registry
-        run: docker push localhost:5000/my-node-app
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image (GHCR tag)
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/my-node-app ./Assignment-04/node-docker-app
+
+      - name: Push to GitHub Container Registry
+        run: docker push ghcr.io/${{ github.repository_owner }}/my-node-app
