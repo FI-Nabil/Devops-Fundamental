@@ -1,0 +1,46 @@
+services:
+  # 1. The Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5433:5432" # Maps port 5433 on your computer to 5432 inside the container
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mydb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. The Backend (Node + Express)
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      # These override your local .env file!
+      - DB_HOST=db       # Points to the 'db' service above
+      - DB_PORT=5432     # Uses the internal Postgres port
+      - DB_USER=postgres
+      - DB_PASSWORD=mysecretpassword
+      - DB_NAME=mydb
+      - PORT=5000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 3. The Frontend (React + Nginx)
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"        # Using 3000 to avoid your previous 8080 conflict
+    depends_on:
+      - backend
+
+# Creates a persistent volume so notes survive container restarts
+volumes:
+  pgdata:

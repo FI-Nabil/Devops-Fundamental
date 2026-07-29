@@ -1,0 +1,86 @@
+name: Capstone Build and Push (GHCR)
+
+on:
+  push:
+    branches:
+      -main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Lint docker-compose.yml (syntax + schema check)
+        run: docker compose -f ./Assignment-06-07/docker-compose.yml config
+
+      - name: Lint server.js (syntax check)
+        run: node --check ./Assignment-06-07/backend/server.js
+
+  build-and-push:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get short SHA
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- BUILD & PUSH BACKEND ---
+      - name: Build Backend Docker image
+        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-backend:${{ steps.vars.outputs.sha_short }} -f ./Assignment-06-07/backend/dockerfile ./Assignment-06-07/backend
+
+      - name: Push Backend to GitHub Container Registry
+        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-backend:${{ steps.vars.outputs.sha_short }}
+
+      # --- BUILD & PUSH FRONTEND ---
+      - name: Build Frontend Docker image
+        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-frontend:${{ steps.vars.outputs.sha_short }} -f ./Assignment-06-07/frontend/Dockerfile ./Assignment-06-07/frontend
+
+      - name: Push Frontend to GitHub Container Registry
+        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-frontend:${{ steps.vars.outputs.sha_short }}
+
+      # --- CLEANUP FOR BOTH IMAGES ---
+      - name: Cleanup old images if more than 5 exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          PACKAGES=("notes-backend" "notes-frontend")
+          
+          for PACKAGE in "${PACKAGES[@]}"; do
+            echo "--- Checking $PACKAGE ---"
+            VERSIONS=$(gh api \
+              -H "Accept: application/vnd.github+json" \
+              "/users/${OWNER}/packages/container/${PACKAGE}/versions" \
+              --paginate || echo "[]")
+
+            COUNT=$(echo "$VERSIONS" | jq 'length')
+            echo "Current image count in registry for $PACKAGE: $COUNT"
+
+            if [ "$COUNT" -gt 5 ]; then
+              OLDEST_ID=$(echo "$VERSIONS" | jq -r 'sort_by(.created_at) | .[0].id')
+              OLDEST_TAG=$(echo "$VERSIONS" | jq -r 'sort_by(.created_at) | .[0].metadata.container.tags[0]')
+              echo "More than 5 images found for $PACKAGE. Deleting oldest: id=$OLDEST_ID tag=$OLDEST_TAG"
+              gh api \
+                --method DELETE \
+                -H "Accept: application/vnd.github+json" \
+                "/users/${OWNER}/packages/container/${PACKAGE}/versions/${OLDEST_ID}"
+            else
+              echo "5 or fewer images exist for $PACKAGE — no cleanup needed."
+            fi
+          done
