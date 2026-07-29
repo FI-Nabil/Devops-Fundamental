@@ -8,7 +8,13 @@ COPY server.js ./
 # Stage 2: Production stage
 FROM node:18-alpine
 WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/server.js ./
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+COPY --from=builder --chown=appuser:appgroup /usr/src/app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /usr/src/app/server.js ./
+
+USER appuser
+
 EXPOSE 3000
 CMD ["node", "server.js"]
