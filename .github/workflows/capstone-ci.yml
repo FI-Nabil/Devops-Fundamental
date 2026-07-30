@@ -3,7 +3,7 @@ name: Capstone Build and Push (GHCR)
 on:
   push:
     branches:
-      -main
+      - main
 
 permissions:
   contents: read
@@ -40,21 +40,42 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # --- BUILD & PUSH BACKEND ---
+      # --- 1. BUILD LOCAL IMAGES ---
       - name: Build Backend Docker image
-        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-backend:${{ steps.vars.outputs.sha_short }} -f ./Assignment-06-07/backend/dockerfile ./Assignment-06-07/backend
+        run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-backend:${{ steps.vars.outputs.sha_short }} -f ./Assignment-06-07/backend/Dockerfile ./Assignment-06-07/backend
 
-      - name: Push Backend to GitHub Container Registry
-        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-backend:${{ steps.vars.outputs.sha_short }}
-
-      # --- BUILD & PUSH FRONTEND ---
       - name: Build Frontend Docker image
         run: docker build -t ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-frontend:${{ steps.vars.outputs.sha_short }} -f ./Assignment-06-07/frontend/Dockerfile ./Assignment-06-07/frontend
+
+      # --- 2. SECURITY SCAN STAGE (TRIVY) ---
+      - name: Scan Backend Image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/notes-backend:${{ steps.vars.outputs.sha_short }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+      - name: Scan Frontend Image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/notes-frontend:${{ steps.vars.outputs.sha_short }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+      # --- 3. PUSH IMAGES (Runs ONLY if Scans Pass) ---
+      - name: Push Backend to GitHub Container Registry
+        run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-backend:${{ steps.vars.outputs.sha_short }}
 
       - name: Push Frontend to GitHub Container Registry
         run: docker push ghcr.io/$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')/notes-frontend:${{ steps.vars.outputs.sha_short }}
 
-      # --- CLEANUP FOR BOTH IMAGES ---
+      # --- 4. CLEANUP FOR BOTH IMAGES ---
       - name: Cleanup old images if more than 5 exist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

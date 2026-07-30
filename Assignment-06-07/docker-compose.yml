@@ -1,5 +1,4 @@
 services:
-  # 1. The Database
   db:
     image: postgres:15-alpine
     environment:
@@ -7,7 +6,7 @@ services:
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: mydb
     ports:
-      - "5433:5432" # Maps port 5433 on your computer to 5432 inside the container
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -15,16 +14,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - backend_net
 
-  # 2. The Backend (Node + Express)
   backend:
     build: ./backend
     ports:
       - "5000:5000"
     environment:
-      # These override your local .env file!
-      - DB_HOST=db       # Points to the 'db' service above
-      - DB_PORT=5432     # Uses the internal Postgres port
+      - DB_HOST=db
+      - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=mysecretpassword
       - DB_NAME=mydb
@@ -32,15 +36,34 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - frontend_net
+      - backend_net
 
-  # 3. The Frontend (React + Nginx)
   frontend:
     build: ./frontend
     ports:
-      - "3000:80"        # Using 3000 to avoid your previous 8080 conflict
+      - "3000:80"
     depends_on:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - frontend_net
 
-# Creates a persistent volume so notes survive container restarts
+networks:
+  frontend_net:
+    driver: bridge
+  backend_net:
+    driver: bridge
+
 volumes:
   pgdata:
