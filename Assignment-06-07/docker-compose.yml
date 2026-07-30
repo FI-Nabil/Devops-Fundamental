@@ -1,5 +1,4 @@
 services:
-  # 1. The Database (Only on backend_net)
   db:
     image: postgres:15-alpine
     environment:
@@ -15,10 +14,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - backend_net
 
-  # 2. The Backend (Bridge — attached to BOTH networks)
   backend:
     build: ./backend
     ports:
@@ -33,21 +36,29 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - frontend_net
       - backend_net
 
-  # 3. The Frontend (Only on frontend_net)
   frontend:
     build: ./frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - frontend_net
 
-# Define custom bridge networks
 networks:
   frontend_net:
     driver: bridge
