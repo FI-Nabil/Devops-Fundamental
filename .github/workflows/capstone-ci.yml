@@ -57,7 +57,7 @@ jobs:
           image-ref: 'ghcr.io/${{ steps.vars.outputs.owner_lc }}/notes-backend:${{ steps.vars.outputs.sha_short }}'
           format: 'table'
           exit-code: '1'
-          ignore-unfixed: true
+          ignore-unfixed: false
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
