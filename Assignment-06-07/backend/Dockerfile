@@ -6,7 +6,7 @@ RUN npm install
 COPY server.js ./
 
 # Stage 2: Production stage
-FROM node:18-alpine
+FROM node:10-alpine
 WORKDIR /usr/src/app
 
 RUN apk upgrade --no-cache && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
