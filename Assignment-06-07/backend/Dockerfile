@@ -8,8 +8,7 @@ COPY server.js ./
 # Stage 2: Production stage
 FROM node:18-alpine
 WORKDIR /usr/src/app
-RUN apk upgrade --no-cache && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN apk upgrade --no-cache && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npxRUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 COPY --from=builder --chown=appuser:appgroup /usr/src/app/node_modules ./node_modules
 COPY --from=builder --chown=appuser:appgroup /usr/src/app/server.js ./
